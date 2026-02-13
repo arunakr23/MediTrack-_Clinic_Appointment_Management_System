@@ -15,7 +15,7 @@ public abstract class Person extends MedicalEntity {
         Validator.validateAge(age);
 
         this.id = id;
-        this.name =name;
+        this.name = name;
         this.age = age;
     }
 

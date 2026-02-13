@@ -175,6 +175,10 @@ Error: Appointment with ID 9999 not found.
 - **Enums**: Type-safe Specialization and AppointmentStatus
 - **Streams & Lambdas**: Filtering and analytics with modern Java
 
+## Limitations
+
+- **ID Generator Persistence**: The in-memory ID counter resets to 1000 on each app restart. If you persist data externally, add a persistence mechanism for the counter to avoid ID conflicts.
+
 
 ## Demo (Sample Run)
 
@@ -202,7 +206,7 @@ Error: Appointment with ID 9999 not found.
 
 From the project root directory, run the following commands in terminal:
 
-```java
+```bash
 Step 1: Compile all Java files using the below command
 javac -d bin -sourcepath src src/com/airtribe/meditrack/Main.java
 

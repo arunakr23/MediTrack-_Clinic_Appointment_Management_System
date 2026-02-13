@@ -3,8 +3,9 @@ package com.airtribe.meditrack.service;
 import java.util.List;
 
 import com.airtribe.meditrack.entity.Patient;
+import com.airtribe.meditrack.interfaces.Searchable;
 import com.airtribe.meditrack.util.DataStore;
-public class PatientService {
+public class PatientService implements Searchable<Patient> {
   
     private DataStore<Patient> patientStore = new DataStore<>();
 
@@ -16,6 +17,11 @@ public class PatientService {
     //retrieving a patient by ID
     public Patient getPatient(int id) {
         return patientStore.get(id);
+    }
+
+    @Override
+    public Patient searchById(int id) {
+        return getPatient(id);
     }
 
     //retrieving all patients

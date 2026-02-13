@@ -1,15 +1,18 @@
 package com.airtribe.meditrack;
 
 import java.time.LocalDate;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
+import com.airtribe.meditrack.constants.Constants;
 import com.airtribe.meditrack.entity.Appointment;
 import com.airtribe.meditrack.entity.Bill;
 import com.airtribe.meditrack.entity.Doctor;
 import com.airtribe.meditrack.entity.Patient;
 import com.airtribe.meditrack.enums.Specialization;
 import com.airtribe.meditrack.exception.AppointmentNotFoundException;
+import com.airtribe.meditrack.exception.InvalidAppointmentStateException;
 import com.airtribe.meditrack.exception.InvalidDataException;
 import com.airtribe.meditrack.service.AppointmentService;
 import com.airtribe.meditrack.service.DoctorService;
@@ -18,39 +21,38 @@ import com.airtribe.meditrack.util.IdGenerator;
 import com.airtribe.meditrack.util.Validator;
 public class Main {
     public static void main(String[] args) {
-       
-        Scanner scanner = new Scanner(System.in);
         
-        DoctorService doctorService = new DoctorService();
-        PatientService patientService = new PatientService();
-        AppointmentService appointmentService = new AppointmentService();
+        try (Scanner scanner = new Scanner(System.in)) {
+            DoctorService doctorService = new DoctorService();
+            PatientService patientService = new PatientService();
+            AppointmentService appointmentService = new AppointmentService();
 
-        IdGenerator idGenerator = IdGenerator.getInstance(); // Using the singleton ID generator
+            IdGenerator idGenerator = IdGenerator.getInstance(); // Using the singleton ID generator
 
-        while(true) {
-            System.out.println("\n===== Welcome to MediTrack - Clinic & Appointment Management System =====");
-            System.out.println("1. Add a Doctor");
-            System.out.println("2. Add a Patient");
-            System.out.println("3. Schedule an Appointment");
-            System.out.println("4. View all Doctors");
-            System.out.println("5. View all Patients");
-            System.out.println("6. View all Appointments");
-            System.out.println("7. Confirm an Appointment");
-            System.out.println("8. Cancel an Appointment");
-            System.out.println("9. Search Doctors by Name");
-            System.out.println("10. Search Patients by Name");
-            System.out.println("11. Delete a Patient");
-            System.out.println("12. Delete a Doctor");
-            System.out.println("13. Average Consultation Fee of Doctors");
-            System.out.println("14. Generate Bill");
-            System.out.println("0. Exit");
+            while(true) {
+                System.out.println("\n===== Welcome to MediTrack - Clinic & Appointment Management System =====");
+                System.out.println("1. Add a Doctor");
+                System.out.println("2. Add a Patient");
+                System.out.println("3. Schedule an Appointment");
+                System.out.println("4. View all Doctors");
+                System.out.println("5. View all Patients");
+                System.out.println("6. View all Appointments");
+                System.out.println("7. Confirm an Appointment");
+                System.out.println("8. Cancel an Appointment");
+                System.out.println("9. Search Doctors by Name");
+                System.out.println("10. Search Patients by Name");
+                System.out.println("11. Delete a Patient");
+                System.out.println("12. Delete a Doctor");
+                System.out.println("13. Average Consultation Fee of Doctors");
+                System.out.println("14. Generate Bill");
+                System.out.println("0. Exit");
 
-            System.out.println("Please enter your choice: ");
-            int choice = scanner.nextInt();
-            scanner.nextLine(); 
+                try {
+                    System.out.println("Please enter your choice: ");
+                    int choice = scanner.nextInt();
+                    scanner.nextLine(); 
 
-            try {
-                switch (choice) {
+                    switch (choice) {
                     case 1: 
                         // Add Doctor
                         System.out.println("Enter Doctor Name: ");
@@ -59,6 +61,10 @@ public class Main {
                         // Validate name before proceeding
                         try {
                             Validator.validateName(docName);
+                        } catch (InputMismatchException e) {
+                            System.out.println("Invalid input. Please enter a number.");
+                            scanner.nextLine();
+
                         } catch (InvalidDataException e) {
                             System.out.println("Validation Error: " + e.getMessage());
                             break;
@@ -68,12 +74,24 @@ public class Main {
                         int docAge = scanner.nextInt();
                         scanner.nextLine();
 
+                        // Validate age before proceeding
+                        try {
+                            Validator.validateAge(docAge);
+                        } catch (InvalidDataException e) {
+                            System.out.println("Validation Error: " + e.getMessage());
+                            break;
+                        }
+
                         System.out.println("Select Specialization: ");
                         for (Specialization spec : Specialization.values()) {
                             System.out.println(spec.ordinal() + 1 + ". " + spec);
                         }
                         int specChoice = scanner.nextInt();
                         scanner.nextLine();
+                        if (specChoice < 1 || specChoice > Specialization.values().length) {
+                            System.out.println("Invalid specialization choice. Please try again!");
+                            break;
+                        }
                         Specialization specialization = Specialization.values()[specChoice - 1];
 
                         System.out.println("Enter Consultation Fee: ");
@@ -102,6 +120,14 @@ public class Main {
                         System.out.println("Enter Age: ");
                         int patientAge = scanner.nextInt();
                         scanner.nextLine();
+
+                        // Validate age before proceeding
+                        try {
+                            Validator.validateAge(patientAge);
+                        } catch (InvalidDataException e) {
+                            System.out.println("Validation Error: " + e.getMessage());
+                            break;
+                        }
 
                         System.out.println("Enter Illness: ");
                         String illness = scanner.nextLine();
@@ -249,8 +275,12 @@ public class Main {
 
                     case 13:
                         // Average Consultation Fee of Doctors
-                        double averageFee = doctorService.averageFee();
-                        System.out.println("Average Consultation Fee of Doctors: Rs." + averageFee);
+                        java.util.OptionalDouble averageFee = doctorService.averageFee();
+                        if (averageFee.isPresent()) {
+                            System.out.println("Average Consultation Fee of Doctors: Rs." + averageFee.getAsDouble());
+                        } else {
+                            System.out.println("No doctors available to calculate average consultation fee.");
+                        }
                         break;
 
                     case 14:
@@ -270,7 +300,7 @@ public class Main {
                         System.out.println("Patient: " + billAppointment.getPatient().getName());
                         System.out.println("Doctor: " + billAppointment.getDoctor().getName());
                         System.out.println("Base Consultation Fee: Rs." + consultationFee);
-                        System.out.println("Tax (18%): Rs." + (consultationFee * 0.18));
+                        System.out.println("Tax (18%): Rs." + (consultationFee * Constants.TAX_RATE));
                         System.out.println("Total Amount: Rs." + totalAmount);
                         System.out.println("========================\n");
                         break;
@@ -288,15 +318,18 @@ public class Main {
             } catch (InvalidDataException e) {
                 System.out.println("Validation Error: " + e.getMessage());
 
+                } catch (InvalidAppointmentStateException e) {
+                    System.out.println("Error: " + e.getMessage());
+
                 } catch (AppointmentNotFoundException e) {
                     System.out.println("Error: " + e.getMessage());
 
                 } catch (Exception e) {
                     System.out.println("An unexpected error occurred: " + e.getMessage());
 
+                    }
                 }
             }
-            
         }
     }
 

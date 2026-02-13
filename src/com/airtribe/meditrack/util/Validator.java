@@ -4,12 +4,16 @@ import com.airtribe.meditrack.exception.InvalidDataException;
 
 public class Validator {
     
-    public static void validateName(String  name) throws InvalidDataException {
+    public static void validateName(String name) throws InvalidDataException {
         if (name == null || name.trim().isEmpty()) {
             throw new InvalidDataException("Invalid name. Please try again!");
         }
-        if (name.matches(".*\\d.*")) {
+        String trimmedName = name.trim();
+        if (trimmedName.matches(".*\\d.*")) {
             throw new InvalidDataException("Invalid name. Name cannot contain numbers!");
+        }
+        if (!trimmedName.matches("^[A-Za-z]+(?:[\\s'-][A-Za-z]+)*$")) {
+            throw new InvalidDataException("Invalid name. Use letters with single spaces, hyphens, or apostrophes only.");
         }
     }
 
@@ -17,6 +21,12 @@ public class Validator {
         if (age <= 0 || age > 120) {
             throw new InvalidDataException("Invalid age. Please enter a valid age between 1 and 120.");
         
+        }
+    }
+
+    public static void validateIllness(String illness) throws InvalidDataException {
+        if (illness == null || illness.trim().isEmpty()) {
+            throw new InvalidDataException("Invalid illness. Please provide a valid illness description.");
         }
     }
 

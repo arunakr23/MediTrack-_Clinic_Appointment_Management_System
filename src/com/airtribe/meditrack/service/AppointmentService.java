@@ -7,6 +7,7 @@ import com.airtribe.meditrack.entity.Appointment;
 import com.airtribe.meditrack.entity.Doctor;
 import com.airtribe.meditrack.enums.AppointmentStatus;
 import com.airtribe.meditrack.exception.AppointmentNotFoundException;
+import com.airtribe.meditrack.exception.InvalidAppointmentStateException;
 import com.airtribe.meditrack.util.DataStore;
 public class AppointmentService {
     
@@ -32,10 +33,10 @@ public class AppointmentService {
     }
 
     //confirming an appointment by ID - Update
-    public void confirmAppointment(int id) throws AppointmentNotFoundException {
+    public void confirmAppointment(int id) throws AppointmentNotFoundException, InvalidAppointmentStateException {
         Appointment appointment = getAppointment(id);
         if (appointment.getStatus() == AppointmentStatus.CANCELLED) {
-            throw new AppointmentNotFoundException("Cannot confirm a cancelled appointment.");
+            throw new InvalidAppointmentStateException("Cannot confirm a cancelled appointment.");
         }
         appointment.confirm();
         appointmentDataStore.save(id, appointment);
@@ -68,7 +69,7 @@ public class AppointmentService {
     }
 
     //using streams to count appointments for a specific doctor
-    public long countAppontmentsByDoctor(Doctor doctor) {
+    public long countAppointmentsByDoctor(Doctor doctor) {
         return appointmentDataStore.getAll().stream()
             .filter(app -> app.getDoctor().equals(doctor))
             .count();

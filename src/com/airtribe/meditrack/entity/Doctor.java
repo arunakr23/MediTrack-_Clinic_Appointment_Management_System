@@ -10,6 +10,10 @@ public class Doctor extends Person {
 
         //call parent constructor
         super(id, name, age);
+        //Consultation fee validation
+        if (consultationFee <= 0) {
+            throw new InvalidDataException("Consultation fee must be a positive number.");
+        }
         this.specialization = specialization;
         this.consultationFee = consultationFee;
     }

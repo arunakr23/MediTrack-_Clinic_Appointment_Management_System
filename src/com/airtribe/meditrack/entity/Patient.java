@@ -1,6 +1,7 @@
 package com.airtribe.meditrack.entity;
 
 import com.airtribe.meditrack.exception.InvalidDataException;
+import com.airtribe.meditrack.util.Validator;
 public class Patient extends Person implements Cloneable {
 
     private String illness;
@@ -8,6 +9,7 @@ public class Patient extends Person implements Cloneable {
     public Patient(int id, String name, int age, String illness) throws InvalidDataException {
   
         super(id, name, age);
+        Validator.validateIllness(illness);
         this.illness = illness;
     }
 

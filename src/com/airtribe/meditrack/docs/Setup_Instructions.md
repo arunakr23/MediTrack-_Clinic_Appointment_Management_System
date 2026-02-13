@@ -1,9 +1,10 @@
 # Setup Instructions
 
 ## Java Installation
-1. For this project, Java Development Kit (JDK) version 21 was used.
-2. The JDK was installed from the official Oracle website and configured on the local system.
-3. After installation, the JAVA_HOME environment variable was set and the JDK bin directory was added to the system PATH to allow Java commands to run from the terminal.
+1. Minimum required: Java Development Kit (JDK) 11 or higher.
+2. For this project, JDK 21 was used during development.
+3. The JDK was installed from the official Oracle website and configured on the local system.
+4. After installation, the JAVA_HOME environment variable was set and the JDK bin directory was added to the system PATH to allow Java commands to run from the terminal.
 
 ## Verifying Java Installation
 To verify that the Java was installed correctly, a simple Hello World program was written and executed.

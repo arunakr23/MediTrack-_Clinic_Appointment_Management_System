@@ -1,11 +1,13 @@
 package com.airtribe.meditrack.service;
 
 import java.util.List;
+import java.util.OptionalDouble;
 
 import com.airtribe.meditrack.entity.Doctor;
 import com.airtribe.meditrack.enums.Specialization;
+import com.airtribe.meditrack.interfaces.Searchable;
 import com.airtribe.meditrack.util.DataStore;
-public class DoctorService {
+public class DoctorService implements Searchable<Doctor> {
     
     private DataStore<Doctor> store = new DataStore<>();
 
@@ -17,6 +19,11 @@ public class DoctorService {
     //retrieving a doctor by ID
     public Doctor getDoctor(int id) {
         return store.get(id);
+    }
+
+    @Override
+    public Doctor searchById(int id) {
+        return getDoctor(id);
     }
 
     //retrieving all doctors
@@ -37,11 +44,11 @@ public class DoctorService {
     }
   
     //using streams to calculate average consultation fee
-    public double averageFee() {
+    public OptionalDouble averageFee() {
         return store.getAll().stream()
             .mapToDouble(Doctor::getConsultationFee)
             .average()
-            .orElse(0.0);
+            ;
     }
 
     //using streams to search doctors by name

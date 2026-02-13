@@ -12,6 +12,7 @@ public class Appointment extends MedicalEntity implements Cloneable {
 
     public Appointment(int id, Doctor doctor, Patient patient, LocalDate appointmentDate) {
         this.id = id;
+        // Doctor is treated as effectively immutable; sharing reference is safe in current model.
         this.doctor = doctor;
         this.patient = patient.clone(); //deep copy of patient to avoid shared reference issues
         this.appointmentDate = appointmentDate;
@@ -48,6 +49,7 @@ public class Appointment extends MedicalEntity implements Cloneable {
     public Appointment clone() { 
         try {
             Appointment copy = (Appointment) super.clone(); // Shallow copy
+            // Doctor reference is shared intentionally Doctor has no mutators.
             copy.patient = this.patient.clone(); // Deep copy of Patient
             return copy; 
         } catch (CloneNotSupportedException e) {
